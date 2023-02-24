@@ -1,11 +1,46 @@
 import './App.style.scss'
+import { useCallback, useState } from 'react'
+import { TextArea } from './components/TextArea'
+import { TextBlock } from './components/TextBlock'
+import { TextField } from './components/TextField'
+import { CypherService } from './global/cypher.service'
 
 export function App() {
+    const [keyword, setKeyword] = useState<string|null>(null)
+    const [input, setInput] = useState<string|null>(null)
+    const [output, setOutput] = useState<string|null>(null)
+
+    const encrypt = useCallback((keyword: string, input: string) => {
+        const key = CypherService.handleKeyword(keyword)
+        const encrypted = CypherService.encrypt(key, input)
+
+        setOutput(encrypted)
+    }, [])
+
+    const decrypt = useCallback((keyword: string, input: string) => {
+        //TODO
+    }, [])
+
     return (
-        <iframe
-            src="https://www.youtube.com/embed/BNflNL40T_M?autoplay=1&controls=1&modestbranding=0&rel=0"
-            title="“Hello There!”"
-            frameBorder="0"
-        />
+        <div className="container">
+            <TextField label="Keyword:" value={keyword} onChange={setKeyword} />
+
+            <TextArea value={input} onChange={setInput} />
+            <TextBlock value={output} />
+
+            <div className="buttons">
+                <button
+                    disabled={!keyword || !input}
+                    children="ENCRYPT"
+                    onClick={() => encrypt(keyword!, input!)}
+                />
+                <button
+                    disabled
+                    //disabled={!keyword || !input}
+                    children="DECRYPT"
+                    onClick={() => decrypt(keyword!, input!)}
+                />
+            </div>
+        </div>
     )
 }
