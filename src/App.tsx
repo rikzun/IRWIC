@@ -11,8 +11,7 @@ export function App() {
     const [output, setOutput] = useState<string|null>(null)
 
     const encrypt = useCallback((keyword: string, input: string) => {
-        const key = CypherService.handleKeyword(keyword)
-        const encrypted = CypherService.encrypt(key, input)
+        const encrypted = CypherService.encrypt(keyword, input)
 
         setOutput(encrypted)
     }, [])
