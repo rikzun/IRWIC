@@ -194,7 +194,7 @@ class DecryptBuilder extends CypherBuilderBase {
     }
 
     removeHash() {
-        const maxIndex = this.array.length - 1
+        const maxIndex = this.array.length - 1 - HASH_LENGTH
 
         const indexes = CypherService
             .generateIndexes(`${this.key}-hash`, HASH_LENGTH, maxIndex)
