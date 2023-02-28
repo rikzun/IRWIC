@@ -11,13 +11,11 @@ export function App() {
     const [output, setOutput] = useState<string|null>(null)
 
     const encrypt = useCallback((keyword: string, input: string) => {
-        const encrypted = CypherService.encrypt(keyword, input)
-
-        setOutput(encrypted)
+        setOutput(CypherService.encrypt(keyword, input))
     }, [])
 
     const decrypt = useCallback((keyword: string, input: string) => {
-        //TODO
+        setOutput(CypherService.decrypt(keyword, input))
     }, [])
 
     return (
@@ -34,8 +32,7 @@ export function App() {
                     onClick={() => encrypt(keyword!, input!)}
                 />
                 <button
-                    disabled
-                    //disabled={!keyword || !input}
+                    disabled={!keyword || !input}
                     children="DECRYPT"
                     onClick={() => decrypt(keyword!, input!)}
                 />

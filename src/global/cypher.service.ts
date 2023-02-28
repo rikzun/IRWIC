@@ -57,10 +57,24 @@ export const CypherService = new class {
         const key = this.keyFromKeyword(rawKey)
 
         const builder = new EncryptBuilder(key, rawInput)
-            .injectHash()
-            .injectNoise()
+            .addHash()
+            .addNoise()
+            .shake()
+            .build()
             
-        return builder.build()
+        return builder.getOutput()
+    }
+
+    decrypt(rawKey: string, rawInput: string) {
+        const key = this.keyFromKeyword(rawKey)
+
+        const builder = new DecryptBuilder(key, rawInput)
+            .build()
+            .shake()
+            .removeHoise()
+            .removeHash()
+            
+        return builder.getOutput()
     }
 }
 
@@ -68,15 +82,20 @@ abstract class CypherBuilderBase {
     protected abstract readonly key: number
     protected abstract readonly raw: string
     protected abstract readonly array: string[] //mutable
+    protected abstract output: string | null
 
-    protected abstract shake(): string[]
-    abstract build(): string
+    abstract shake(): this
+    abstract build(): this
+    abstract getOutput(): string
 }
 
 class EncryptBuilder extends CypherBuilderBase {
     protected readonly key: number
     protected readonly raw: string
     protected readonly array: string[]
+
+    protected output: string | null = null
+    getOutput() { return this.output! }
 
     constructor(key: number, raw: string) {
         super()
@@ -86,13 +105,11 @@ class EncryptBuilder extends CypherBuilderBase {
         this.array = Array.from(raw)
     }
 
-    injectHash() {
+    addHash() {
         const hash = CypherService.getHash(this.raw)
 
         let maxIndex = this.array.length - 1
-        if (maxIndex < HASH_LENGTH - 1) {
-            maxIndex += HASH_LENGTH - 1
-        }
+        if (maxIndex < HASH_LENGTH) maxIndex += HASH_LENGTH
 
         CypherService
             .generateIndexes(`${this.key}-hash`, HASH_LENGTH, maxIndex)
@@ -103,12 +120,12 @@ class EncryptBuilder extends CypherBuilderBase {
         return this
     }
 
-    injectNoise() {
+    addNoise() {
         const ran = Random(`${this.key}-noise-count`)
         const noiseCount = ran.range(MAX_NOISE)
 
         let maxIndex = this.array.length - 1
-        if (maxIndex < noiseCount - 1) maxIndex += noiseCount - 1
+        if (maxIndex < noiseCount) maxIndex += noiseCount
 
         CypherService
             .generateIndexes(`${this.key}-noise`, noiseCount, maxIndex)
@@ -120,16 +137,18 @@ class EncryptBuilder extends CypherBuilderBase {
         return this
     }
 
-    protected shake() {
+    shake() {
         let i = 0
 
-        return [...this.array].sort(() =>
+        this.array.sort(() =>
             Random(`${this.key + (i += 1)}-shake`).range(100)
         )
+
+        return this
     }
 
     build() {
-        const encrypted = this.shake().map((v, i) => {
+        const encrypted = this.array.map((v, i) => {
             const code = CypherService.codeFromChar(v)
             const offset = Random(`${this.key + i}-offset`).range(MAX_UTF16)
 
@@ -139,6 +158,83 @@ class EncryptBuilder extends CypherBuilderBase {
             return CypherService.codeToChar(final)
         })
 
-        return encrypted.join('')
+        this.output = encrypted.join('')
+        return this
+    }
+}
+
+class DecryptBuilder extends CypherBuilderBase {
+    protected readonly key: number
+    protected readonly raw: string
+    protected readonly array: string[]
+
+    protected output: string | null = null
+    getOutput() { return this.array.join('') }
+
+    constructor(key: number, raw: string) {
+        super()
+        
+        this.key = key
+        this.raw = raw
+        this.array = Array.from(raw)
+    }
+
+    removeHoise() {
+        const ran = Random(`${this.key}-noise-count`)
+
+        const noiseCount = ran.range(MAX_NOISE)
+        const maxIndex = this.array.length - 1
+
+        CypherService
+            .generateIndexes(`${this.key}-noise`, noiseCount, maxIndex)
+            .reverse()
+            .forEach((index) => this.array.splice(index, 1))
+
+        return this
+    }
+
+    removeHash() {
+        const maxIndex = this.array.length - 1
+
+        const indexes = CypherService
+            .generateIndexes(`${this.key}-hash`, HASH_LENGTH, maxIndex)
+            .reverse()
+
+        const currentHash = indexes.map((v) => this.array[v]).reverse().join('')
+        indexes.forEach((index) => this.array.splice(index, 1))
+
+        const hash = CypherService.getHash(this.array.join(''))
+        if (hash !== currentHash) {
+            this.array.splice(0, this.array.length)
+            this.array.push(...Array.from('HASH MISMATCH'))
+        }
+
+        return this
+    }
+
+    shake() {
+        let i = 0
+
+        this.array.sort(() =>
+            Random(`${this.key + (i += 1)}-shake`).range(100)
+        )
+
+        return this
+    }
+
+    build() {
+        const decrypted = this.array.map((v, i) => {
+            const offset = Random(`${this.key + i}-offset`).range(MAX_UTF16)
+            const code = CypherService.codeFromChar(v)
+
+            let final = code - offset
+            if (final < 0) final += MAX_UTF16
+
+            return CypherService.codeToChar(final)
+        })
+
+        this.array.splice(0, this.array.length)
+        this.array.push(...decrypted)
+        return this
     }
 }
