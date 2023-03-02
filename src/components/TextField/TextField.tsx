@@ -1,5 +1,5 @@
 import './TextField.styles.scss'
-import { ControlledFieldProps } from "src/global/types";
+import { ControlledFieldProps } from "src/types";
 
 export interface TextFieldProps extends ControlledFieldProps {
     label?: string | null

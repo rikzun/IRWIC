@@ -1,5 +1,5 @@
 import './TextArea.styles.scss'
-import { ControlledFieldProps } from 'src/global/types';
+import { ControlledFieldProps } from 'src/types';
 
 export function TextArea({value, onChange}: ControlledFieldProps) {
     return (
