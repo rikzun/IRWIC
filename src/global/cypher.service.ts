@@ -29,7 +29,7 @@ export const CypherService = new class {
     }
 
     generateIndexes(key: string, count: number, maxIndex: number) {
-        if (maxIndex + 1 !== count) throw Error("generateIndexes: maxIndex too small")
+        if (maxIndex + 1 < count) throw Error("generateIndexes: maxIndex too small")
 
         const ran = Random(key)
         const indexes: number[] = []
