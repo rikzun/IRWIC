@@ -1,14 +1,39 @@
-import { create as Random } from "random-seed"
+import { create as Random, RandomSeed } from "random-seed"
 import stringHash from "string-hash"
 
-export const MAX_UTF16 = 1114111
 export const MAX_NOISE = 100
 export const HASH_LENGTH = 10
 
-export const CypherService = new class {
+const UTF16Tools = new class {
+    range00 = 0x0000
+    range01 = 0xD7FF
+    freeSpace = 0x0801
+    range10 = 0xE000
+    range11 = 0x10FFFF
+
+    generateCode(key: string) {
+        while (true) {
+            const code = Random(key).intBetween(this.range00, this.range11)
+            if (code <= this.range01 || code >= this.range10) return code
+        }
+    }
+
+    generateChar(key: string) {
+        return this.codeToChar(this.generateCode(key))
+    }
+
+    verifyOffset(offset: number) {
+        if (offset > this.range11) return offset - this.range11
+        if (offset < 0) return offset + this.range11
+        if (offset > this.range01 && offset < this.range10) return offset + this.freeSpace
+        return offset
+    }
 
     codeToChar(code: number) { return String.fromCodePoint(code) }
     codeFromChar(char: string) { return char.codePointAt(0)! }
+}
+
+export const CypherService = new class {
 
     keyFromKeyword(keyword: string) {
         return Array.from(keyword).reduce((acc, char) => {
@@ -35,7 +60,7 @@ export const CypherService = new class {
         const indexes: number[] = []
 
         for (let i = 0; i < count; i++) {
-            let num = ran.range(maxIndex)
+            let num = ran.range(maxIndex + 1)
 
             while (true) {
                 if (indexes.includes(num)) {
@@ -107,9 +132,9 @@ class EncryptBuilder extends CypherBuilderBase {
 
     addHash() {
         const hash = CypherService.getHash(this.raw)
+        const maxIndex = (this.array.length + HASH_LENGTH) - 1
 
-        let maxIndex = this.array.length - 1
-        if (maxIndex < HASH_LENGTH) maxIndex += HASH_LENGTH
+        console.log(this.raw)
 
         CypherService
             .generateIndexes(`${this.key}-hash`, HASH_LENGTH, maxIndex)
@@ -122,15 +147,14 @@ class EncryptBuilder extends CypherBuilderBase {
 
     addNoise() {
         const ran = Random(`${this.key}-noise-count`)
-        const noiseCount = ran.range(MAX_NOISE)
 
-        let maxIndex = this.array.length - 1
-        if (maxIndex < noiseCount) maxIndex += noiseCount
+        const noiseCount = ran.range(MAX_NOISE)
+        const maxIndex = (this.array.length + noiseCount) - 1
 
         CypherService
-            .generateIndexes(`${this.key}-noise`, noiseCount, maxIndex)
+            .generateIndexes(`${this.key}-noise-index`, noiseCount, maxIndex)
             .forEach((insertIndex) => {
-                const char = CypherService.codeToChar(ran.range(MAX_UTF16))
+                const char = UTF16Tools.generateChar(`${this.key}-noise-char`)
                 this.array.splice(insertIndex, 0, char)
             })
 
@@ -149,13 +173,11 @@ class EncryptBuilder extends CypherBuilderBase {
 
     build() {
         const encrypted = this.array.map((v, i) => {
-            const code = CypherService.codeFromChar(v)
-            const offset = Random(`${this.key + i}-offset`).range(MAX_UTF16)
+            const code = UTF16Tools.codeFromChar(v)
+            const offset = UTF16Tools.generateCode(`${this.key + i}-offset`)
+            const final = UTF16Tools.verifyOffset(code + offset)
 
-            let final = code + offset
-            if (final > MAX_UTF16) final -= MAX_UTF16
-
-            return CypherService.codeToChar(final)
+            return UTF16Tools.codeToChar(final)
         })
 
         this.output = encrypted.join('')
@@ -186,7 +208,7 @@ class DecryptBuilder extends CypherBuilderBase {
         const maxIndex = this.array.length - 1
 
         CypherService
-            .generateIndexes(`${this.key}-noise`, noiseCount, maxIndex)
+            .generateIndexes(`${this.key}-noise-index`, noiseCount, maxIndex)
             .reverse()
             .forEach((index) => this.array.splice(index, 1))
 
@@ -194,7 +216,7 @@ class DecryptBuilder extends CypherBuilderBase {
     }
 
     removeHash() {
-        const maxIndex = this.array.length - 1 - HASH_LENGTH
+        const maxIndex = this.array.length - 1
 
         const indexes = CypherService
             .generateIndexes(`${this.key}-hash`, HASH_LENGTH, maxIndex)
@@ -204,6 +226,7 @@ class DecryptBuilder extends CypherBuilderBase {
         indexes.forEach((index) => this.array.splice(index, 1))
 
         const hash = CypherService.getHash(this.array.join(''))
+        console.log(this.array.join(''))
         if (hash !== currentHash) {
             this.array.splice(0, this.array.length)
             this.array.push(...Array.from('HASH MISMATCH'))
@@ -224,13 +247,11 @@ class DecryptBuilder extends CypherBuilderBase {
 
     build() {
         const decrypted = this.array.map((v, i) => {
-            const offset = Random(`${this.key + i}-offset`).range(MAX_UTF16)
-            const code = CypherService.codeFromChar(v)
+            const offset = UTF16Tools.generateCode(`${this.key + i}-offset`)
+            const code = UTF16Tools.codeFromChar(v)
+            const final = UTF16Tools.verifyOffset(code - offset)
 
-            let final = code - offset
-            if (final < 0) final += MAX_UTF16
-
-            return CypherService.codeToChar(final)
+            return UTF16Tools.codeToChar(final)
         })
 
         this.array.splice(0, this.array.length)
