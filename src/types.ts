@@ -4,7 +4,7 @@ export interface ControlledFieldProps {
 }
 
 export abstract class CypherBuilderBase {
-    protected abstract readonly key: number
+    protected abstract readonly key: string
     protected abstract readonly raw: string
     protected abstract readonly array: string[] //mutable
     protected abstract output: string | null

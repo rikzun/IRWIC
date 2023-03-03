@@ -4,14 +4,14 @@ import { UTF16Tools } from "../utils"
 import { CypherService, HASH_LENGTH, MAX_NOISE } from "./cypher.service"
 
 export class EncryptBuilder extends CypherBuilderBase {
-    protected readonly key: number
+    protected readonly key: string
     protected readonly raw: string
     protected readonly array: string[]
 
     protected output: string | null = null
     getOutput() { return this.output! }
 
-    constructor(key: number, raw: string) {
+    constructor(key: string, raw: string) {
         super()
         
         this.key = key

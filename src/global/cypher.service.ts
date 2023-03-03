@@ -17,7 +17,7 @@ export const CypherService = new class {
             }
 
             return acc + num
-        }, 0)
+        }, '')
     }
 
     getHash(value: string) {
