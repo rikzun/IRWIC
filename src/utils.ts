@@ -15,10 +15,10 @@ export const UTF16Tools = new class {
     range11 = 0x10FFFF
 
     generateCode(key: string) {
-        while (true) {
-            const code = Random(key).intBetween(this.range00, this.range11)
-            if (code <= this.range01 || code >= this.range10) return code
-        }
+        let code = Random(key).intBetween(this.range00, this.range11)
+        if (code > this.range01 && code < this.range10) code += this.freeSpace
+
+        return code
     }
 
     generateChar(key: string) {
