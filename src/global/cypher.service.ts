@@ -6,9 +6,8 @@ import { DecryptBuilder } from "./cypher.decrypt"
 export const MAX_NOISE = 100
 export const HASH_LENGTH = 10
 
-export const CypherService = new class {
-
-    keyFromKeyword(keyword: string) {
+export class CypherService {
+    static keyFromKeyword(keyword: string) {
         return Array.from(keyword).reduce((acc, char) => {
             let num = 0
         
@@ -20,7 +19,7 @@ export const CypherService = new class {
         }, '')
     }
 
-    getHash(value: string) {
+    static getHash(value: string) {
         const hash = String(stringHash(value))
         const remaining = HASH_LENGTH - hash.length
 
@@ -28,7 +27,7 @@ export const CypherService = new class {
         return '0'.repeat(remaining) + hash
     }
 
-    generateIndexes(key: string, count: number, maxIndex: number) {
+    static generateIndexes(key: string, count: number, maxIndex: number) {
         if (maxIndex + 1 < count) throw Error("generateIndexes: maxIndex too small")
 
         const ran = Random(key)
@@ -53,8 +52,8 @@ export const CypherService = new class {
         return indexes.sort((a, b) => a - b)
     }
 
-    encrypt(rawKey: string, rawInput: string) {
-        const key = this.keyFromKeyword(rawKey)
+    static encrypt(rawKey: string, rawInput: string) {
+        const key = CypherService.keyFromKeyword(rawKey)
 
         const builder = new EncryptBuilder(key, rawInput)
             .addHash()
@@ -65,8 +64,8 @@ export const CypherService = new class {
         return builder.getOutput()
     }
 
-    decrypt(rawKey: string, rawInput: string) {
-        const key = this.keyFromKeyword(rawKey)
+    static decrypt(rawKey: string, rawInput: string) {
+        const key = CypherService.keyFromKeyword(rawKey)
 
         const builder = new DecryptBuilder(key, rawInput)
             .build()

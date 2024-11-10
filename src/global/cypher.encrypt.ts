@@ -23,8 +23,6 @@ export class EncryptBuilder extends CypherBuilderBase {
         const hash = CypherService.getHash(this.raw)
         const maxIndex = (this.array.length + HASH_LENGTH) - 1
 
-        console.log(this.raw)
-
         CypherService
             .generateIndexes(`${this.key}-hash`, HASH_LENGTH, maxIndex)
             .forEach((insertIndex, index) => {

@@ -1,41 +1,68 @@
 import './App.style.scss'
-import { useCallback, useState } from 'react'
-import { TextArea } from './components/TextArea'
-import { TextBlock } from './components/TextBlock'
-import { TextField } from './components/TextField'
+import { useCallback } from 'react'
 import { CypherService } from './global/cypher.service'
+import { copyToClipboard, useDebouncedEffect, useStorage } from './utils'
+import { Switch, TextStats } from './components'
 
 export function App() {
-    const [keyword, setKeyword] = useState<string|null>(null)
-    const [input, setInput] = useState<string|null>(null)
-    const [output, setOutput] = useState<string|null>(null)
+    const mode = useStorage('encrypt')
+    const key = useStorage('')
+    const input = useStorage('')
+    const output = useStorage('')
 
-    const encrypt = useCallback((keyword: string, input: string) => {
-        setOutput(CypherService.encrypt(keyword, input))
-    }, [])
+    const handler = useCallback((key: string, input: string) => {
+        output.set((mode.value == 'encrypt'
+            ? CypherService.encrypt
+            : CypherService.decrypt
+        )(key, input))
+    }, [mode])
 
-    const decrypt = useCallback((keyword: string, input: string) => {
-        setOutput(CypherService.decrypt(keyword, input))
-    }, [])
+    useDebouncedEffect(() => {
+        if (key.value == '' || input.value == '') return
+        handler(key.value, input.value)
+    }, [key, input], 300)
 
     return (
         <div className="container">
-            <TextField label="Keyword:" value={keyword} onChange={setKeyword} />
-
-            <TextArea value={input} onChange={setInput} />
-            <TextBlock value={output} />
-
-            <div className="buttons">
-                <button
-                    disabled={!keyword || !input}
-                    children="ENCRYPT"
-                    onClick={() => encrypt(keyword!, input!)}
+            <div className="column">
+                <div className="key-field">
+                    <input
+                        type="text"
+                        spellCheck="false"
+                        placeholder="Key"
+                        className="text-input"
+                        value={key.value}
+                        onChange={(e) => key.set(e.target.value)}
+                    />
+                    <Switch
+                        first={{title: 'Encrypt', value: 'encrypt'}}
+                        second={{title: 'Decrypt', value: 'decrypt'}}
+                        state={mode}
+                    />
+                </div>
+                <textarea
+                    spellCheck="false"
+                    placeholder="Input"
+                    className="text-input"
+                    value={input.value}
+                    onChange={(e) => input.set(e.target.value)}
+                />
+                <TextStats text={input.value} />
+            </div>
+            <div className="column">
+                <textarea
+                    spellCheck="false"
+                    placeholder="Output"
+                    className="text-input output"
+                    value={output.value}
+                    disabled
                 />
                 <button
-                    disabled={!keyword || !input}
-                    children="DECRYPT"
-                    onClick={() => decrypt(keyword!, input!)}
+                    className="copy-button active"
+                    children="Copy"
+                    onClick={() => copyToClipboard(output.value)}
                 />
+                <TextStats text={output.value} />
             </div>
         </div>
     )
