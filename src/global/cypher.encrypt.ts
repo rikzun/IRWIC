@@ -49,11 +49,11 @@ export class EncryptBuilder extends CypherBuilderBase {
     }
 
     shake() {
-        let i = 0
-
-        this.array.sort(() =>
-            Random(`${this.key + (i += 1)}-shake`).range(100)
-        )
+        const maxIndex = this.array.length - 1
+        for (let i = maxIndex; i > 0; i--) {
+            const j = Random(`${this.key + i}-shake`).range(maxIndex);
+            [this.array[i], this.array[j]] = [this.array[j], this.array[i]]
+        }
 
         return this
     }

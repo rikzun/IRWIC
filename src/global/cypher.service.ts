@@ -58,7 +58,7 @@ export class CypherService {
         const builder = new EncryptBuilder(key, rawInput)
             .addHash()
             .addNoise()
-            .shake()
+            // .shake()
             .build()
             
         return builder.getOutput()
@@ -69,7 +69,7 @@ export class CypherService {
 
         const builder = new DecryptBuilder(key, rawInput)
             .build()
-            .shake()
+            // .shake()
             .removeHoise()
             .removeHash()
             

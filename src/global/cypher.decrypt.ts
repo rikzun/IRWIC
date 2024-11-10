@@ -24,6 +24,7 @@ export class DecryptBuilder extends CypherBuilderBase {
 
         const noiseCount = ran.range(MAX_NOISE)
         const maxIndex = this.array.length - 1
+        if (maxIndex + 1 < noiseCount) return this
 
         CypherService
             .generateIndexes(`${this.key}-noise-index`, noiseCount, maxIndex)
@@ -35,6 +36,11 @@ export class DecryptBuilder extends CypherBuilderBase {
 
     removeHash() {
         const maxIndex = this.array.length - 1
+        if (maxIndex + 1 < HASH_LENGTH) {
+            this.array.splice(0, this.array.length)
+            this.array.push(...Array.from('HASH MISMATCH'))
+            return this
+        }
 
         const indexes = CypherService
             .generateIndexes(`${this.key}-hash`, HASH_LENGTH, maxIndex)
@@ -53,11 +59,11 @@ export class DecryptBuilder extends CypherBuilderBase {
     }
 
     shake() {
-        let i = 0
-
-        this.array.sort(() =>
-            Random(`${this.key + (i += 1)}-shake`).range(100)
-        )
+        const maxIndex = this.array.length - 1
+        for (let i = 0; i < maxIndex; i++) {
+            const j = Random(`${this.key + (maxIndex - i)}-shake`).range(maxIndex);
+            [this.array[i], this.array[j]] = [this.array[j], this.array[i]]
+        }
 
         return this
     }

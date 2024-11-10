@@ -1,5 +1,5 @@
 import { create as Random } from "random-seed"
-import { Dispatch, SetStateAction, useEffect, useState } from "react"
+import { Dispatch, SetStateAction, useDeferredValue, useEffect, useState } from "react"
 
 export function copyToClipboard(value: string) {
     navigator.clipboard.writeText(value)
@@ -39,6 +39,10 @@ export interface UseState<T> {
     set: Dispatch<SetStateAction<T>>
 }
 
+export interface UseDefferedState<T> extends UseState<T> {
+    deffered: T
+}
+
 export function useDebouncedEffect(callback: () => any, dependencies: any[], delay = 100) {
     useEffect(() => {
         const timer = setTimeout(() => {
@@ -46,10 +50,25 @@ export function useDebouncedEffect(callback: () => any, dependencies: any[], del
         }, delay);
 
         return () => clearTimeout(timer);
-    }, [...dependencies, delay]);
+    }, [callback, ...dependencies]);
 }
 
 export function useStorage <T>(value: T): UseState<T> {
     const [state, setState] = useState(value)
-    return { value: state, set: setState }
+    
+    return {
+        value: state,
+        set: setState
+    }
+}
+
+export function useDefferedStorage <T>(value: T): UseDefferedState<T> {
+    const [state, setState] = useState(value)
+    const defferedState = useDeferredValue(state)
+
+    return {
+        value: state,
+        deffered: defferedState,
+        set: setState
+    }
 }

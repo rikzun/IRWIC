@@ -47,11 +47,7 @@ body {
 
                 > textarea {
                     height: 100%;
-
-                    &.output {
-                        font-family: monospace;
-                        line-height: 19px;
-                    }
+                    line-height: 19px;
                 }
 
                 > .copy-button {
