@@ -1,9 +1,11 @@
+import { memo } from "react"
+
 interface TextStatsProps {
     text: string
     comparable?: string
 }
 
-export function TextStats(props: TextStatsProps) {
+export const TextStats = memo((props: TextStatsProps) => {
     if (props.text.length == 0) return null
     const textLength = props.text.length
     const textSize = new Blob([props.text]).size
@@ -18,4 +20,6 @@ export function TextStats(props: TextStatsProps) {
             {textLength}{compLength && `(${compLengthSign}${compLength}%)`} chars {textSize}{compSize && `(${compSizeSign}${compSize}%)`} bytes
         </span>
     )
-}
+}, (prevProps, nextProps) => {
+    return prevProps.text === nextProps.text
+})

@@ -1,26 +1,25 @@
 import './App.style.scss'
-import { useCallback, useEffect } from 'react'
 import { CypherService } from './global/cypher.service'
-import { copyToClipboard, useDefferedStorage, useStorage } from './utils'
+import { copyToClipboard, useDebouncedEffect, useStorage } from './utils'
 import { Switch, TextStats } from './components'
 
 export function App() {
     const mode = useStorage('encrypt')
-    const key = useDefferedStorage('')
-    const input = useDefferedStorage('')
+    const key = useStorage('')
+    const input = useStorage('')
     const output = useStorage('')
 
-    const handler = useCallback((key: string, input: string) => {
+    useDebouncedEffect(100, () => {
+        if (key.value == '' || input.value == '') {
+            output.set('')
+            return
+        }
+        
         output.set((mode.value == 'encrypt'
             ? CypherService.encrypt
             : CypherService.decrypt
-        )(key, input))
-    }, [mode.value])
-
-    useEffect(() => {
-        if (key.deffered == '' || input.deffered == '') return
-        handler(key.deffered, input.deffered)
-    }, [key.deffered, input.deffered, mode.value])
+        )(key.value, input.value))
+    }, [mode.value, key.value, input.value])
 
     return (
         <div className="container">
@@ -47,7 +46,7 @@ export function App() {
                     value={input.value}
                     onChange={(e) => input.set(e.target.value)}
                 />
-                <TextStats text={input.deffered} />
+                <TextStats text={input.value} />
             </div>
             <div className="column">
                 <textarea
@@ -62,7 +61,7 @@ export function App() {
                     children="Copy"
                     onClick={() => copyToClipboard(output.value)}
                 />
-                <TextStats text={output.value} comparable={input.deffered} />
+                <TextStats text={output.value} comparable={input.value} />
             </div>
         </div>
     )

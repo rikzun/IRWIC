@@ -43,32 +43,17 @@ export interface UseDefferedState<T> extends UseState<T> {
     deffered: T
 }
 
-export function useDebouncedEffect(callback: () => any, dependencies: any[], delay = 100) {
+export function useDebouncedEffect(delay: number, callback: () => any, dependencies: any[]) {
     useEffect(() => {
         const timer = setTimeout(() => {
-            callback();
-        }, delay);
+            callback()
+        }, delay)
 
-        return () => clearTimeout(timer);
-    }, [callback, ...dependencies]);
+        return () => clearTimeout(timer)
+    }, dependencies)
 }
 
 export function useStorage <T>(value: T): UseState<T> {
     const [state, setState] = useState(value)
-    
-    return {
-        value: state,
-        set: setState
-    }
-}
-
-export function useDefferedStorage <T>(value: T): UseDefferedState<T> {
-    const [state, setState] = useState(value)
-    const defferedState = useDeferredValue(state)
-
-    return {
-        value: state,
-        deffered: defferedState,
-        set: setState
-    }
+    return { value: state, set: setState }
 }
