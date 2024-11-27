@@ -1,5 +1,18 @@
 @import url('https://fonts.googleapis.com/css2?family=Roboto+Mono:ital,wght@0,100..700;1,100..700&display=swap');
 
+@mixin scrollbar {
+    &::-webkit-scrollbar { width: 10px; }
+    &::-webkit-scrollbar-corner { display: none; }
+
+    &::-webkit-scrollbar-thumb {
+        cursor: default;
+        background-color: #ffffff4d;
+        border-radius: 50px;
+        border: 2px solid transparent;
+        background-clip: padding-box;
+    }
+}
+
 body {
     margin: 0;
     height: 100vh;
@@ -70,6 +83,8 @@ body {
                 border-radius: 4px;
                 background-color: rgba(0, 0, 0, 0.3);
                 box-shadow: 0 1px rgba(255, 255, 255, 0.2);
+
+                @include scrollbar
             }
 
             button {
