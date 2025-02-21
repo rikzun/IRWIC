@@ -47,16 +47,13 @@ body {
             min-width: 400px;
             min-height: 100px;
             height: 30%;
-            grid-template-columns: 1fr 1fr;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 6px;
 
             > .column {
                 display: flex;
                 flex-direction: column;
                 position: relative;
-
-                &:first-child {
-                    margin-right: 8px;
-                }
 
                 > textarea {
                     height: 100%;
