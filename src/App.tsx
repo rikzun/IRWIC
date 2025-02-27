@@ -1,6 +1,6 @@
 import './App.style.scss'
-import { CypherService } from './global/cypher.service'
-import { copyToClipboard, useDebouncedEffect, useStorage } from './utils'
+import { CypherService } from './cypher/cypher.service'
+import { useDebouncedEffect, useStorage } from './utils/react'
 import { Switch, TextStats } from './components'
 
 export function App() {
@@ -59,7 +59,7 @@ export function App() {
                 <button
                     className="copy-button active"
                     children="Copy"
-                    onClick={() => copyToClipboard(output.value)}
+                    onClick={() => navigator.clipboard.writeText(output.value)}
                 />
                 <TextStats text={output.value} comparable={input.value} />
             </div>

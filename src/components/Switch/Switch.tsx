@@ -1,5 +1,5 @@
 import './Switch.style.scss'
-import { UseState, useStorage } from "../../utils"
+import { UseState, useStorage } from "../../utils/utils"
 
 interface SwithProps {
     first?: SwitchValue
