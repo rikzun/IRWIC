@@ -1,7 +1,7 @@
 import { Dispatch, SetStateAction, useEffect, useState } from "react"
 
 
-export interface UseState<T> {
+export interface Storage<T> {
     value: T
     set: Dispatch<SetStateAction<T>>
 }
@@ -16,7 +16,7 @@ export function useDebouncedEffect(delay: number, callback: () => any, dependenc
     }, dependencies)
 }
 
-export function useStorage <T>(value: T): UseState<T> {
+export function useStorage <T>(value: T): Storage<T> {
     const [state, setState] = useState(value)
     return { value: state, set: setState }
 }
