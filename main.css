@@ -1,0 +1,144 @@
+/*!*************************************************************************************************************!*\
+  !*** css ./node_modules/css-loader/dist/cjs.js!./node_modules/sass-loader/dist/cjs.js!./src/App.style.scss ***!
+  \*************************************************************************************************************/
+@import url(https://fonts.googleapis.com/css2?family=Roboto+Mono:ital,wght@0,100..700;1,100..700&display=swap);
+/*!*****************************************************************************************************************!*\
+  !*** css ./node_modules/css-loader/dist/cjs.js!./node_modules/sass-loader/dist/cjs.js!./src/App.style.scss (1) ***!
+  \*****************************************************************************************************************/
+body {
+  margin: 0;
+  height: 100vh;
+  width: 100vw;
+  font-family: "Roboto Mono", monospace;
+  background: linear-gradient(#37383D, #202125);
+}
+body::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: -1;
+  background: linear-gradient(rgba(255, 255, 255, 0.0509803922) 1px, transparent 1px), linear-gradient(to right, rgba(255, 255, 255, 0.0509803922) 1px, transparent 1px);
+  background-size: 39px 39px;
+  background-position-x: -16px;
+  background-position-y: -13px;
+}
+body > #root {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: inherit;
+  width: inherit;
+}
+body > #root > .container {
+  display: grid;
+  width: 50%;
+  min-width: 400px;
+  min-height: 100px;
+  height: 30%;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  column-gap: 6px;
+  row-gap: 6px;
+}
+@media screen and (max-width: 910px) {
+  body > #root > .container {
+    width: 100%;
+    height: 100%;
+    grid-template-rows: 1fr 1fr;
+    grid-template-columns: 1fr;
+    padding: 2rem;
+    box-sizing: border-box;
+  }
+}
+body > #root > .container > .column {
+  display: flex;
+  flex-direction: column;
+}
+body > #root > .container > .column > .textarea-container {
+  height: 100%;
+  position: relative;
+}
+body > #root > .container > .column > .textarea-container > textarea {
+  width: 100%;
+  height: 100%;
+  line-height: 19px;
+  box-sizing: border-box;
+}
+body > #root > .container > .column > .textarea-container > .copy-button {
+  position: absolute;
+  right: 0;
+  bottom: 0px;
+  border-radius: 4px 0;
+  background-color: #616163 !important;
+}
+body > #root > .container .text-input {
+  font-family: "Roboto Mono", monospace;
+  resize: none;
+  outline: none;
+  color: white;
+  font-size: 14px;
+  line-break: anywhere;
+  border: 1px solid rgba(0, 0, 0, 0.3);
+  border-radius: 4px;
+  background-color: rgba(0, 0, 0, 0.3);
+  box-shadow: 0 1px rgba(255, 255, 255, 0.2);
+}
+body > #root > .container .text-input::-webkit-scrollbar {
+  width: 10px;
+}
+body > #root > .container .text-input::-webkit-scrollbar-corner {
+  display: none;
+}
+body > #root > .container .text-input::-webkit-scrollbar-thumb {
+  cursor: default;
+  background-color: rgba(255, 255, 255, 0.3019607843);
+  border-radius: 50px;
+  border: 2px solid transparent;
+  background-clip: padding-box;
+}
+body > #root > .container button {
+  cursor: pointer;
+  color: white;
+  border: 1px solid rgba(0, 0, 0, 0.3);
+  border-radius: 4px;
+  background-color: rgba(0, 0, 0, 0.3);
+  box-shadow: 0 1px rgba(255, 255, 255, 0.2);
+}
+body > #root > .container button.active {
+  border: 1px solid rgba(255, 255, 255, 0.3) !important;
+  background-color: rgba(255, 255, 255, 0.3) !important;
+  box-shadow: 0 1px rgba(0, 0, 0, 0.2) !important;
+}
+body > #root > .container .key-field {
+  display: flex;
+  margin-bottom: 6px;
+}
+body > #root > .container .key-field > input {
+  width: 100%;
+  margin-right: 6px;
+}
+body > #root > .container .text-stats {
+  font-size: 12px;
+  color: grey;
+  margin-top: 2px;
+  text-align: right;
+}
+/*!**********************************************************************************************************************************!*\
+  !*** css ./node_modules/css-loader/dist/cjs.js!./node_modules/sass-loader/dist/cjs.js!./src/components/Switch/Switch.style.scss ***!
+  \**********************************************************************************************************************************/
+.switch {
+  display: flex;
+}
+.switch > button {
+  border-radius: unset !important;
+}
+.switch > button:first-child {
+  border-radius: 4px 0 0 4px !important;
+}
+.switch > button:last-child {
+  border-radius: 0 4px 4px 0 !important;
+}
+
+/*# sourceMappingURL=main.css.map*/
