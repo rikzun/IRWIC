@@ -1,7 +1,7 @@
 import type { RandomSeed } from "random-seed"
 import { EncryptBuilder } from "./cypher.encrypt"
 import { DecryptBuilder } from "./cypher.decrypt"
-import { UTF16Tools } from "src/utils/utf16tools"
+import { UTF16Tools } from "@utils/utf16tools"
 import stringHash from "string-hash"
 
 export const MAX_NOISE = 100
