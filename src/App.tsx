@@ -39,28 +39,32 @@ export function App() {
                         state={mode}
                     />
                 </div>
-                <textarea
-                    spellCheck="false"
-                    placeholder="Input"
-                    className="text-input"
-                    value={input.value}
-                    onChange={(e) => input.set(e.target.value)}
-                />
+                <div className="textarea-container">
+                    <textarea
+                        spellCheck="false"
+                        placeholder="Input"
+                        className="text-input"
+                        value={input.value}
+                        onChange={(e) => input.set(e.target.value)}
+                    />
+                </div>
                 <TextStats text={input.value} />
             </div>
             <div className="column">
-                <textarea
-                    spellCheck="false"
-                    placeholder="Output"
-                    className="text-input output"
-                    value={output.value}
-                    disabled
-                />
-                <button
-                    className="copy-button active"
-                    children="Copy"
-                    onClick={() => navigator.clipboard.writeText(output.value)}
-                />
+                <div className="textarea-container">
+                    <textarea
+                        spellCheck="false"
+                        placeholder="Output"
+                        className="text-input output"
+                        value={output.value}
+                        disabled
+                    />
+                    <button
+                        className="copy-button active"
+                        children="Copy"
+                        onClick={() => navigator.clipboard.writeText(output.value)}
+                    />
+                </div>
                 <TextStats text={output.value} comparable={input.value} />
             </div>
         </div>

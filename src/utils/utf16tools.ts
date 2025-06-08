@@ -40,5 +40,3 @@ export class UTF16Tools {
             .map((v) => v.segment)
     }
 }
-
-(window as any).UTF16Tools = UTF16Tools;
