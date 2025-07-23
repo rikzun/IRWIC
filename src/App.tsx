@@ -1,21 +1,22 @@
-import './App.style.scss'
-import { CypherService } from './cypher/cypher.service'
-import { useDebouncedEffect, useStorage } from './utils/react'
-import { Switch, TextStats } from './components'
+import "./App.style.scss"
+import { CypherService } from "./cypher/cypher.service"
+import { useDebouncedEffect, useState } from "./utils/hooks"
+import { Switch } from "./components/Switch"
+import { TextStats } from "./components/TextStats"
 
 export function App() {
-    const mode = useStorage('encrypt')
-    const key = useStorage('')
-    const input = useStorage('')
-    const output = useStorage('')
+    const mode = useState("encrypt")
+    const key = useState("")
+    const input = useState("")
+    const output = useState("")
 
     useDebouncedEffect(100, () => {
-        if (key.value == '' || input.value == '') {
-            output.set('')
+        if (key.value == "" || input.value == "") {
+            output.set("")
             return
         }
         
-        output.set((mode.value == 'encrypt'
+        output.set((mode.value == "encrypt"
             ? CypherService.encrypt
             : CypherService.decrypt
         )(key.value, input.value))
@@ -34,8 +35,8 @@ export function App() {
                         onChange={(e) => key.set(e.target.value)}
                     />
                     <Switch
-                        first={{title: 'Encrypt', value: 'encrypt'}}
-                        second={{title: 'Decrypt', value: 'decrypt'}}
+                        first={{title: "Encrypt", value: "encrypt"}}
+                        second={{title: "Decrypt", value: "decrypt"}}
                         state={mode}
                     />
                 </div>
@@ -48,8 +49,12 @@ export function App() {
                         onChange={(e) => input.set(e.target.value)}
                     />
                 </div>
-                <TextStats text={input.value} />
+
+                <TextStats
+                    text={input.value}
+                />
             </div>
+
             <div className="column">
                 <div className="textarea-container">
                     <textarea
@@ -65,7 +70,11 @@ export function App() {
                         onClick={() => navigator.clipboard.writeText(output.value)}
                     />
                 </div>
-                <TextStats text={output.value} comparable={input.value} />
+
+                <TextStats
+                    text={output.value}
+                    comparable={input.value}
+                />
             </div>
         </div>
     )

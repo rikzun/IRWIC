@@ -1,5 +1,5 @@
 import './Switch.style.scss'
-import { Storage } from "@utils/react"
+import { State } from "@utils/hooks"
 
 interface SwithProps {
     first?: SwitchValue
@@ -8,7 +8,7 @@ interface SwithProps {
     fourth?: SwitchValue
 
     elements?: SwitchValue[]
-    state: Storage<string>
+    state: State<string>
 }
 
 interface SwitchValue {
