@@ -7,25 +7,24 @@
     "build": "cross-env NODE_ENV=production NODE_OPTIONS='--experimental-transform-types' rspack build"
   },
   "dependencies": {
-    "random-seed": "^0.3.0",
-    "react": "^19.1.0",
-    "react-dom": "^19.1.0",
-    "string-hash": "^1.1.3"
+    "comlink": "^4.4.2",
+    "random": "^5.4.1",
+    "react": "^19.2.0",
+    "react-dom": "^19.2.0"
   },
   "devDependencies": {
-    "@rspack/cli": "^1.4.8",
-    "@rspack/core": "^1.4.8",
-    "@rspack/plugin-react-refresh": "^1.4.3",
+    "@rspack/cli": "^1.5.8",
+    "@rspack/core": "^1.5.8",
+    "@rspack/plugin-react-refresh": "^1.5.2",
     "@svgr/webpack": "^8.1.0",
-    "@types/react": "^19.1.8",
-    "@types/react-dom": "^19.1.5",
-    "@types/random-seed": "^0.3.5",
+    "@types/react": "^19.2.2",
+    "@types/react-dom": "^19.2.2",
     "@types/string-hash": "^1.1.3",
-    "cross-env": "^7.0.3",
-    "react-refresh": "^0.17.0",
-    "sass-embedded": "^1.89.2",
-    "sass-loader": "^16.0.5",
-    "ts-checker-rspack-plugin": "^1.1.4",
-    "typescript": "^5.8.3"
+    "cross-env": "^10.1.0",
+    "react-refresh": "^0.18.0",
+    "sass-embedded": "^1.93.2",
+    "sass-loader": "^16.0.6",
+    "ts-checker-rspack-plugin": "^1.1.6",
+    "typescript": "^5.9.3"
   }
 }
