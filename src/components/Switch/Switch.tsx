@@ -1,5 +1,5 @@
-import './Switch.style.scss'
-import { State } from "@utils/hooks"
+import "./Switch.style.scss"
+import { StateHook } from "@utils/hooks"
 
 interface SwithProps {
     first?: SwitchValue
@@ -8,7 +8,7 @@ interface SwithProps {
     fourth?: SwitchValue
 
     elements?: SwitchValue[]
-    state: State<string>
+    state: StateHook<string>
 }
 
 interface SwitchValue {
@@ -27,7 +27,7 @@ export function Switch(props: SwithProps) {
                 <button
                     key={button.value}
                     children={button.title}
-                    className={props.state.value == button.value ? 'active' : undefined}
+                    className={props.state.value == button.value ? "active" : undefined}
                     onClick={() => props.state.set(button.value)}
                 />
             ))}

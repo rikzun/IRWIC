@@ -1,4 +1,4 @@
-import type { RandomSeed } from "random-seed"
+import type { Random } from "random"
 
 export class UTF16Tools {
     static range00 = 0x0000
@@ -7,12 +7,12 @@ export class UTF16Tools {
     static range10 = 0xE000
     static range11 = 0x10FFFF
 
-    static generateChar(random: RandomSeed) {
+    static generateChar(random: Random) {
         return this.codePointsToChar([this.generateCodePoint(random)])
     }
 
-    static generateCodePoint(random: RandomSeed) {
-        let code = random.intBetween(this.range00, this.range11)
+    static generateCodePoint(random: Random) {
+        let code = random.int(this.range00, this.range11)
         if (code > this.range01 && code < this.range10) code += this.freeSpace
 
         return code

@@ -1,8 +1,10 @@
 import "./App.style.scss"
-import { CypherService } from "./cypher/cypher.service"
 import { useDebouncedEffect, useState } from "./utils/hooks"
 import { Switch } from "./components/Switch"
 import { TextStats } from "./components/TextStats"
+import { Workers } from "@workers"
+
+const cypherWorker = Workers.Cypher()
 
 export function App() {
     const mode = useState("encrypt")
@@ -15,11 +17,14 @@ export function App() {
             output.set("")
             return
         }
+
+        const method = mode.value == "encrypt"
+            ? cypherWorker.rpc.encrypt
+            : cypherWorker.rpc.decrypt
         
-        output.set((mode.value == "encrypt"
-            ? CypherService.encrypt
-            : CypherService.decrypt
-        )(key.value, input.value))
+        method(key.value, input.value).then((data) => {
+            output.set(data)
+        })
     }, [mode.value, key.value, input.value])
 
     return (

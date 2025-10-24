@@ -7,19 +7,22 @@ interface TextStatsProps {
 
 export const TextStats = memo((props: TextStatsProps) => {
     if (props.text.length == 0) return null
+    if (props.comparable != null && props.comparable.length == 0) return null
+
     const textLength = props.text.length
     const textSize = new Blob([props.text]).size
 
     const compLength = props.comparable ? Math.floor(((textLength / props.comparable.length) * 100) - 100) : null
-    const compLengthSign = (compLength ?? 0) >= 0 ? '+' : ''
+    const compLengthString = compLength ? ` (${compLength >= 0 ? "+" : ""}${compLength}%)` : ""
+
     const compSize = props.comparable ? Math.floor(((textSize / new Blob([props.comparable]).size) * 100) - 100) : null
-    const compSizeSign = (compSize ?? 0) >= 0 ? '+' : ''
+    const compSizeString = compSize ? ` (${compSize >= 0 ? "+" : ""}${compSize}%)` : ""
 
     return (
         <span className="text-stats">
-            {textLength}{compLength && `(${compLengthSign}${compLength}%)`} chars {textSize}{compSize && `(${compSizeSign}${compSize}%)`} bytes
+            {textLength} chars{compLengthString} {textSize} bytes{compSizeString}
         </span>
     )
-}, (prevProps, nextProps) => {
-    return prevProps.text === nextProps.text
+}, (prev, next) => {
+    return prev.text === next.text
 })
