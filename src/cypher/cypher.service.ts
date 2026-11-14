@@ -1,23 +1,21 @@
 import type { Random } from "random"
 import { EncryptBuilder } from "./cypher.encrypt"
 import { DecryptBuilder } from "./cypher.decrypt"
-import { UTF16Tools } from "@utils/utf16tools"
+import { UnicodeTools } from "../utils/unicode"
 
 export const MAX_NOISE = 100
 export const HASH_LENGTH = 64
 
 export class CypherService {
     static keywordToKeycode(keyword: string) {
-        return UTF16Tools.splitGraphemes(keyword).map((grapheme) => {
-            return Array.from(grapheme)
-                .map((v) => v.codePointAt(0)!)
-                .join("|")
-        }).join(";")
+        return UnicodeTools
+            .toCodePoints(keyword.normalize("NFC"))
+            .join(";")
     }
 
     static async getSHA256(value: string) {
         const message = new TextEncoder().encode(value)
-        const hashBuffer = await self.crypto.subtle.digest("SHA-256", message)
+        const hashBuffer = await globalThis.crypto.subtle.digest("SHA-256", message)
         const hashArray = Array.from(new Uint8Array(hashBuffer))
 
         return hashArray
@@ -30,18 +28,19 @@ export class CypherService {
         const indexes = new Set<number>()
 
         while (indexes.size < count) {
-            let num = random.int(0, maxIndex)
-            indexes.add(num)
+            indexes.add(random.int(0, maxIndex))
         }
 
         return Array.from(indexes)
             .sort((a, b) => a - b)
     }
 
-    static shuffle(random: Random, mCharacters: string[], reverse = false) {
-        const length = mCharacters.length
+    static shuffle<T>(random: Random, characters: T[], reverse = false) {
+        const length = characters.length
+        if (length < 2) return
+
         const maxIndex = length - 1
-        const swaps = new Array(maxIndex)
+        const swaps: [number, number][] = []
 
         for (let i = maxIndex; i > 0; i--) {
             const j = random.int(0, i)
@@ -51,7 +50,7 @@ export class CypherService {
         if (reverse) swaps.reverse()
 
         swaps.forEach(([i, j]) => {
-            [mCharacters[i], mCharacters[j]] = [mCharacters[j], mCharacters[i]]
+            [characters[i], characters[j]] = [characters[j], characters[i]]
         })
     }
 
@@ -78,8 +77,8 @@ export class CypherService {
             await decrypter.removeHash()
 
             return decrypter.getOutput()
-        } catch(e: any) {
-            return e.message
+        } catch (error) {
+            return error instanceof Error ? error.message : String(error)
         }
     }
 }

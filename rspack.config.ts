@@ -1,11 +1,11 @@
 import path from "path"
 import fs from "fs"
 import { fileURLToPath } from "url"
+import { defineConfig } from "@rspack/cli"
 import { HtmlRspackPlugin, SwcJsMinimizerRspackPlugin, LightningCssMinimizerRspackPlugin, CopyRspackPlugin, DefinePlugin } from "@rspack/core"
 import { TsCheckerRspackPlugin } from "ts-checker-rspack-plugin"
-import ReactRefreshRspackPlugin from "@rspack/plugin-react-refresh"
-import type { Configuration, NormalModule } from "@rspack/core"
-import type { Config as SwcConfig } from "@rspack/core/compiled/@swc/types"
+import { ReactRefreshRspackPlugin } from "@rspack/plugin-react-refresh"
+import type { NormalModule } from "@rspack/core"
 
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
@@ -24,14 +24,14 @@ const PATH_TS_CONFIG = path.join(__dirname, "tsconfig.json")
 const ALIAS_ASSETS_FOLDER = path.join(PATH_SOURCE_FOLDER, "assets")
 const ALIAS_ATOMS_FOLDER = path.join(PATH_SOURCE_FOLDER, "atoms")
 const ALIAS_COMPONENTS_FOLDER = path.join(PATH_SOURCE_FOLDER, "components")
+const ALIAS_TYPES_FOLDER = path.join(PATH_SOURCE_FOLDER, "types")
 const ALIAS_UTILS_FOLDER = path.join(PATH_SOURCE_FOLDER, "utils")
 const ALIAS_WORKERS_FOLDER = path.join(PATH_SOURCE_FOLDER, "workers")
 
 const targets = ["last 2 versions", "> 0.2%", "not dead", "Firefox ESR"]
 
-const config: Configuration = {
+export default defineConfig({
     mode: IS_DEVELOPMENT ? "development" : "production",
-    devtool: IS_DEVELOPMENT ? "source-map" : false,
     entry: PATH_SOURCE_ENTRY,
     output: {
         path: PATH_OUTPUT_FOLDER,
@@ -40,7 +40,10 @@ const config: Configuration = {
         publicPath: "auto",
         clean: true
     },
-    cache: true,
+    cache: {
+        type: "persistent",
+        buildDependencies: [__filename, PATH_TS_CONFIG]
+    },
     optimization: {
         runtimeChunk: "single",
         splitChunks: {
@@ -69,6 +72,7 @@ const config: Configuration = {
             "@assets": ALIAS_ASSETS_FOLDER,
             "@atoms": ALIAS_ATOMS_FOLDER,
             "@components": ALIAS_COMPONENTS_FOLDER,
+            "@types": ALIAS_TYPES_FOLDER,
             "@utils": ALIAS_UTILS_FOLDER,
             "@workers": ALIAS_WORKERS_FOLDER
         }
@@ -78,7 +82,8 @@ const config: Configuration = {
         open: true,
         compress: true,
         port: 3000,
-        historyApiFallback: true
+        historyApiFallback: true,
+        allowedHosts: "all"
     },
     module: {
         rules: [
@@ -102,7 +107,7 @@ const config: Configuration = {
                             }
                         },
                         env: { targets }
-                    } as SwcConfig
+                    }
                 }
             },
             {
@@ -132,7 +137,9 @@ const config: Configuration = {
     },
     plugins: [
         new TsCheckerRspackPlugin(),
-        new HtmlRspackPlugin({ template: PATH_PUBLIC_ENTRY }),
+        new HtmlRspackPlugin({
+            template: PATH_PUBLIC_ENTRY
+        }),
         new CopyRspackPlugin({
             patterns: fs.readdirSync(PATH_PUBLIC_FOLDER, { withFileTypes: true }).map((file) => {
                 const location = path.join(file.parentPath, file.name)
@@ -144,14 +151,5 @@ const config: Configuration = {
             }).filter((location) => location.from != PATH_PUBLIC_ENTRY)
         }),
         (IS_DEVELOPMENT && IS_SERVE) && new ReactRefreshRspackPlugin()
-    ],
-    experiments: {
-        css: true,
-        cache: {
-            type: "persistent",
-            buildDependencies: [__filename, PATH_TS_CONFIG]
-        }
-    }
-}
-
-export default config
+    ]
+})

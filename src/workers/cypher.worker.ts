@@ -1,6 +1,6 @@
 import * as Comlink from "comlink"
 import { WorkerLib } from "@workers/lib"
-import { CypherService } from "src/cypher/cypher.service"
+import { CypherService } from "../cypher/cypher.service"
 
 export class CypherWorkerRPC extends WorkerLib.RPC {
     async encrypt(keyword: string, input: string) {
