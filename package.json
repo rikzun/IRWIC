@@ -9,7 +9,7 @@
   },
   "dependencies": {
     "comlink": "^4.4.2",
-    "random": "^5.4.1",
+    "random": "^5.5.1",
     "react": "^19.3.1",
     "react-dom": "^19.3.1"
   },

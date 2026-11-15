@@ -36,7 +36,7 @@ export default defineConfig({
     output: {
         path: PATH_OUTPUT_FOLDER,
         filename: IS_SERVE ? "[name].js" : "[name].[fullhash:8].js",
-        chunkFilename: "[name].[chunkhash:8].js",
+        chunkFilename: IS_SERVE ? "[name].js" : "[name].[fullhash:8].js",
         publicPath: "auto",
         clean: true
     },
@@ -47,7 +47,7 @@ export default defineConfig({
     optimization: {
         runtimeChunk: "single",
         splitChunks: {
-            chunks: "all",
+            chunks: "initial",
             cacheGroups: {
                 vendor: {
                     name: "vendors",
